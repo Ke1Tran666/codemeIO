@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "Categories")
 public class Category implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "CategoryID")
     private Integer categoryId;
 
     @Column(nullable = false)

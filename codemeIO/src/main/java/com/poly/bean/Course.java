@@ -16,14 +16,16 @@ import lombok.NoArgsConstructor;
 public class Course implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "CourseId")
     private Integer courseId;
 
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT")
-    private String description; // Sử dụng columnDefinition cho NVARCHAR(MAX)
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String description; // Sử dụng NVARCHAR(MAX) cho mô tả
 
+    @Column(name = "ImageCourses") // Đảm bảo tên cột đúng
     private String imageCourses; // Đường dẫn đến hình ảnh khóa học
 
     @Column(nullable = false)
@@ -39,5 +41,8 @@ public class Course implements Serializable {
     @JoinColumn(name = "InstructorId")
     private User instructor; // Liên kết đến User (giáo viên)
 
-   // Các trường khác như TotalStudents sẽ được thêm vào nếu cần thiết.
+    @Column(name = "TotalStudents", nullable = false)
+    private Integer totalStudents = 0; // Số lượng sinh viên tham gia khóa học, mặc định là 0
+
+   // Các trường khác sẽ được thêm vào nếu cần thiết.
 }
