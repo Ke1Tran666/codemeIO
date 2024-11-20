@@ -83,4 +83,12 @@ public class UserServiceImpl implements UserService {
     public Long countUsersByType(String userType) {
         return userRepo.countByUserType(userType);
     }
+    
+    public User login(String username, String password) {
+        User user = userRepo.findByUsername(username);
+        if (user != null && user.getPassword().equals(password)) {
+            return user; // Hoặc trả về thông tin người dùng cần thiết
+        }
+        return null; // Trả về null nếu không tìm thấy người dùng hoặc mật khẩu sai
+    }
 }

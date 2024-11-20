@@ -31,4 +31,6 @@ public interface UserService {
     void deleteUserRole(Long id);
 
     Long countUsersByType(String userType);
+    
+    User login(String username, String password); // Phương thức này sẽ trả về User nếu đăng nhập thành công
 }
