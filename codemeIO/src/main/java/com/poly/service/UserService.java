@@ -12,11 +12,11 @@ public interface UserService {
     
     User findByUsername(String username);
     
-    User save(User user);
+    User save(User user); // Lưu một người dùng mới
     
     void deleteByUsername(String username);
 
-    boolean existsByUsername(String username);
+    boolean existsByUsername(String username); // Kiểm tra xem tên người dùng đã tồn tại
 
     List<User> findByFullname(String fullname);
 

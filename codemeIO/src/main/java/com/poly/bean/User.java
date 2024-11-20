@@ -29,6 +29,8 @@ public class User implements Serializable {
     private String gender;
     private String photo;
     private String status;
+    
+    @Column(name = "userType")
     private String userType;
 
     @Temporal(TemporalType.DATE)

@@ -7,4 +7,5 @@ import com.poly.bean.Role;
 
 @Repository
 public interface RoleRepository extends JpaRepository<Role, Integer> {
+	Role findByRoleName(String roleName);
 }
