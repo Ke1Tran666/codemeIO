@@ -2,11 +2,9 @@ package com.poly.controller;
 
 import java.util.Date;
 import java.text.SimpleDateFormat;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
@@ -61,7 +59,6 @@ public class AuthController {
     public ResponseEntity<String> registerUser(@RequestBody User user) {
         user.setUserType("student"); 
         
-        // Kiểm tra sự tồn tại của email
         if (userService.existsByEmail(user.getEmail())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại.");
         }
@@ -77,13 +74,7 @@ public class AuthController {
         userRole.setUser(savedUser);
         userRole.setRole(role); 
 
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        try {
-            Date dateAssigned = dateFormat.parse(dateFormat.format(new Date()));
-            userRole.setDateAssigned(dateAssigned);
-        } catch (ParseException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Lỗi khi gán ngày");
-        }
+        userRole.setDateAssigned(new Date());
 
         userRoleService.save(userRole);
         return ResponseEntity.ok("Người dùng đã được đăng ký thành công");
@@ -92,49 +83,58 @@ public class AuthController {
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> payload) {
         String email = payload.get("email");
-        
+
+        // Kiểm tra tính hợp lệ của email
         if (email == null || !email.matches("^[\\w-.]+@[\\w-]+\\.[a-zA-Z]{2,}$")) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email không hợp lệ");
         }
 
+        // Tìm người dùng theo email
         User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email không tồn tại");
         }
 
+        // Tạo token mới
         String token = UUID.randomUUID().toString();
-        tokenStore.put(token, email);
+        tokenStore.put(token, email); // Lưu token vào tokenStore
 
+        // Gửi email với token
         try {
             SimpleMailMessage message = new SimpleMailMessage();
             message.setTo(email);
             message.setSubject("Yêu cầu đặt lại mật khẩu");
-            String encodedEmail = URLEncoder.encode(email, StandardCharsets.UTF_8);
-            message.setText("Vui lòng nhấp vào liên kết sau để đặt lại mật khẩu: " +
-                            "http://yourdomain.com/reset-password?token=" + token + "&email=" + encodedEmail);
+            message.setText("Token của bạn là: " + token + "\nVui lòng nhấp vào liên kết sau để đặt lại mật khẩu: " +
+                    "http://localhost:5173/reset-password?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8));
             mailSender.send(message);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể gửi email: " + e.getMessage());
         }
 
-        return ResponseEntity.ok("Email đặt lại mật khẩu đã được gửi");
+        return ResponseEntity.ok("Email đặt lại mật khẩu đã được gửi đến " + email);
     }
-
+    
     @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestParam String token, @RequestBody Map<String, String> payload) {
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> payload) {
+        String token = payload.get("token");
         String newPassword = payload.get("newPassword");
+
+        // Kiểm tra token
         String email = tokenStore.get(token);
         if (email == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token không hợp lệ hoặc đã hết hạn");
         }
 
+        // Cập nhật mật khẩu
         User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Người dùng không tồn tại");
         }
 
-        user.setPassword(newPassword);
+        user.setPassword(newPassword); // Bạn nên mã hóa mật khẩu trước khi lưu
         userService.save(user);
+
+        // Xóa token sau khi cập nhật mật khẩu
         tokenStore.remove(token);
 
         return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công");
