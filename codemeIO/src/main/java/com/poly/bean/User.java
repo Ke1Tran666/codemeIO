@@ -17,10 +17,14 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "Users")
 public class User implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer userId; // Cập nhật để phù hợp với bảng SQL
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
+	@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer userId;
     private String username;
     private String password;
     private String fullname;

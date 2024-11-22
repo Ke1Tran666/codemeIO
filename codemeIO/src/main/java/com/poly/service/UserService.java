@@ -12,11 +12,15 @@ public interface UserService {
     
     User findByUsername(String username);
     
+    User findByEmail(String email);
+    
     User save(User user); // Lưu một người dùng mới
     
     void deleteByUsername(String username);
 
     boolean existsByUsername(String username); // Kiểm tra xem tên người dùng đã tồn tại
+    
+    boolean existsByEmail(String email);
 
     List<User> findByFullname(String fullname);
 
@@ -33,4 +37,5 @@ public interface UserService {
     Long countUsersByType(String userType);
     
     User login(String username, String password); // Phương thức này sẽ trả về User nếu đăng nhập thành công
+    
 }

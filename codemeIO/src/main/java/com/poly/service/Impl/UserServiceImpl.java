@@ -31,7 +31,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByUsername(String username) {
-        return userRepo.findByUsername(username); // Sử dụng phương thức mới
+        return userRepo.findByUsername(username);
+    }
+    
+    @Override
+    public User findByEmail(String email) {
+        if (email == null || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+            throw new IllegalArgumentException("Email không hợp lệ");
+        }
+        return userRepo.findByEmail(email.toLowerCase());
     }
 
     @Override
@@ -47,6 +55,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsByUsername(String username) {
         return userRepo.existsByUsername(username);
+    }
+    
+    @Override
+    public boolean existsByEmail(String email) {
+    	return userRepo.findByEmail(email) != null;     
     }
 
     @Override

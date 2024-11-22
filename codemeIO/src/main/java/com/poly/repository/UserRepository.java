@@ -10,11 +10,15 @@ import com.poly.bean.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
     
-    User findByUsername(String username); // Thêm phương thức này
+    User findByUsername(String username);
+    
+    User findByEmail(String email);
 
     void deleteByUsername(String username);
 
     boolean existsByUsername(String username);
+    
+    boolean existsByEmail(String email);
 
     List<User> findByFullname(String fullname);
 
