@@ -46,12 +46,14 @@ public class AuthController {
     private HttpServletRequest request;
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User loginRequest) {
+    public ResponseEntity<User> login(@RequestBody User loginRequest) {
         User user = userService.login(loginRequest.getUsername(), loginRequest.getPassword());
         if (user != null) {
-            return ResponseEntity.ok("Đăng nhập thành công");
+            // Trả về thông tin người dùng nếu đăng nhập thành công
+            return ResponseEntity.ok(user);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Tên người dùng hoặc mật khẩu không hợp lệ");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                 .body(null); // Hoặc có thể trả về một đối tượng lỗi nếu cần
         }
     }
 
