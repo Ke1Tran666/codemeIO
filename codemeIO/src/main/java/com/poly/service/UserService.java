@@ -2,6 +2,8 @@ package com.poly.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.poly.bean.Role;
 import com.poly.bean.User;
 import com.poly.bean.UserRole;
@@ -9,6 +11,8 @@ import com.poly.bean.UserRole;
 public interface UserService {
 
     List<User> findAll();
+    
+    User findById(Integer userId);
     
     User findByUsername(String username);
     
@@ -37,5 +41,7 @@ public interface UserService {
     Long countUsersByType(String userType);
     
     User login(String username, String password); // Phương thức này sẽ trả về User nếu đăng nhập thành công
+    
+    String saveImage(MultipartFile file);
     
 }

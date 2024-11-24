@@ -58,18 +58,18 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody User user) {
+    public ResponseEntity<User> registerUser(@RequestBody User user) {
         user.setUserType("student"); 
         
         if (userService.existsByEmail(user.getEmail())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email đã tồn tại.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
         User savedUser = userService.save(user);
         Role role = roleService.findByName("student");
 
         if (role == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vai trò không tồn tại");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
         UserRole userRole = new UserRole();
@@ -79,7 +79,7 @@ public class AuthController {
         userRole.setDateAssigned(new Date());
 
         userRoleService.save(userRole);
-        return ResponseEntity.ok("Người dùng đã được đăng ký thành công");
+        return ResponseEntity.ok(savedUser);
     }
 
     @PostMapping("/forgot-password")

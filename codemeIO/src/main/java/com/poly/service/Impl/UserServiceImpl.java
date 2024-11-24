@@ -1,9 +1,15 @@
 package com.poly.service.Impl;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.poly.bean.Role;
 import com.poly.bean.User;
@@ -27,6 +33,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> findAll() {
         return userRepo.findAll();
+    }
+    
+    @Override
+    public User findById(Integer userId) { // Thêm phương thức này
+        return userRepo.findById(userId).orElse(null); // Trả về null nếu không tìm thấy
     }
 
     @Override
@@ -103,5 +114,26 @@ public class UserServiceImpl implements UserService {
             return user; // Hoặc trả về thông tin người dùng cần thiết
         }
         return null; // Trả về null nếu không tìm thấy người dùng hoặc mật khẩu sai
+    }
+    
+    @Override
+    public String saveImage(MultipartFile file) {
+        String uploadDir = "uploads/"; // Thư mục lưu trữ hình ảnh
+        File directory = new File(uploadDir);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Tạo thư mục nếu chưa tồn tại
+        }
+
+        // Tạo tên tệp duy nhất
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        Path path = Paths.get(uploadDir + fileName);
+
+        try {
+            Files.write(path, file.getBytes()); // Lưu tệp
+            return "/uploads/" + fileName; // Trả về URL hình ảnh
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Không thể lưu hình ảnh");
+        }
     }
 }
