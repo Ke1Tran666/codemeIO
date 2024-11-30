@@ -66,7 +66,7 @@ public class AuthController {
         }
 
         User savedUser = userService.save(user);
-        Role role = roleService.findByName("student");
+        Role role = roleService.findByName("Student");
 
         if (role == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);

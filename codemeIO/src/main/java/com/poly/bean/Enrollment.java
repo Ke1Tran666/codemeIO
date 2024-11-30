@@ -32,4 +32,5 @@ public class Enrollment implements Serializable {
 
      @Temporal(TemporalType.DATE) 
      private Date completionDate; 
+     
 }

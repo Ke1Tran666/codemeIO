@@ -32,11 +32,4 @@ public class CourseController {
 	public List<Course> getAllCourses() {
 		return courseService.findAll(); // Trả về danh sách khóa học
 	}
-	
-//	@GetMapping("/courses/category/{categoryId}")
-//	public ResponseEntity<List<Course>> getCoursesByCategory(@PathVariable Long categoryId) {
-//	    Category category = categoryService.findById(categoryId); // Lấy danh mục từ ID
-//	    List<Course> courses = courseService.findByCategory(category);
-//	    return ResponseEntity.ok(courses);
-//	}
 }
