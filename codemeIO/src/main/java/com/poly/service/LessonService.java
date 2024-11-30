@@ -20,4 +20,5 @@ public interface LessonService {
     List<Lesson> findByTitleLike(String title);
 
     List<Lesson> findByCourse(Course course);
+   
 }
