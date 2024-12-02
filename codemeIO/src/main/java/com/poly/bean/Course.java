@@ -34,7 +34,7 @@ public class Course implements Serializable {
     private BigDecimal rating; // Sử dụng BigDecimal cho đánh giá
 
     @ManyToOne
-    @JoinColumn(name = "CategoryId")
+    @JoinColumn(name = "categoryId", nullable = false)
     private Category category; // Liên kết đến Category
 
     @ManyToOne

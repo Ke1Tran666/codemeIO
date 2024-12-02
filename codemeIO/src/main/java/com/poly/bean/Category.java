@@ -1,6 +1,7 @@
 package com.poly.bean;
 
 import java.io.Serializable;
+import java.util.List;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -13,8 +14,9 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "Categories")
 public class Category implements Serializable {
+    
     @Id
-    @Column(name = "CategoryID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer categoryId;
 
     @Column(nullable = false)

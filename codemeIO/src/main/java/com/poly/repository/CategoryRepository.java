@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.poly.bean.Category;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends JpaRepository<Category, Integer> {
 
     List<Category> findByCategoryNameContaining(String categoryName); // Tìm kiếm theo tên danh mục
 }

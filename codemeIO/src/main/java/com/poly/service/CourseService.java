@@ -1,24 +1,21 @@
 package com.poly.service;
 
-
 import java.util.List;
-
+import java.math.BigDecimal;
 import com.poly.bean.Category;
 import com.poly.bean.Course;
-
-import java.math.BigDecimal;
 
 public interface CourseService {
 
     List<Course> findAll();
     
-    Course findById(Long id);
+    Course findById(Integer id);
     
     Course save(Course course);
     
-    void deleteById(Long id);
+    void deleteById(Integer id);
 
-    boolean existsById(Long id);
+    boolean existsById(Integer id);
 
     List<Course> findByTitle(String title);
 
@@ -28,5 +25,7 @@ public interface CourseService {
 
     List<Course> findByPriceLessThan(BigDecimal price);
 
-    Long countCoursesByCategory(Long categoryId);
+    Integer countCoursesByCategory(Integer categoryId);
+    
+    List<Course> findByCategoryId(Integer categoryId);
 }

@@ -2,10 +2,8 @@ package com.poly.service.Impl;
 
 import java.util.List;
 import java.math.BigDecimal;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import com.poly.bean.Category;
 import com.poly.bean.Course;
 import com.poly.repository.CourseRepository;
@@ -23,8 +21,8 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Course findById(Long id) {
-        return courseRepo.findById(id).orElse(null);
+    public Course findById(Integer id) {
+        return courseRepo.findById(id).orElse(null); // Sử dụng Optional
     }
 
     @Override
@@ -33,12 +31,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         courseRepo.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existsById(Integer id) {
         return courseRepo.existsById(id);
     }
 
@@ -63,7 +61,12 @@ public class CourseServiceImpl implements CourseService {
     }
 
     @Override
-    public Long countCoursesByCategory(Long categoryId) {
+    public Integer countCoursesByCategory(Integer categoryId) {
         return courseRepo.countByCategory_CategoryId(categoryId); // Đảm bảo phương thức này tồn tại trong repository
+    }
+    
+    @Override
+    public List<Course> findByCategoryId(Integer categoryId) {
+        return courseRepo.findByCategory_CategoryId(categoryId); // Sử dụng phương thức từ repository
     }
 }
