@@ -1,6 +1,7 @@
 package com.poly.controller.rest;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,27 +13,43 @@ import com.poly.bean.User;
 import com.poly.service.UserService;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private UserService userService;
-    
-//	@GetMapping("/check-email")
-//  public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam String email) {
-//      boolean exists = userService.existsByEmail(email);
-//      Map<String, Boolean> response = new HashMap<>();
-//      response.put("exists", exists);
-//      return ResponseEntity.ok(response);
-//  }
 
-    @GetMapping("/user/{id}")
+    // Phương thức lấy tất cả User
+    @GetMapping("/")
+    public ResponseEntity<List<User>> findAll() {
+        List<User> users = userService.findAll(); // Lấy tất cả người dùng
+        return ResponseEntity.ok(users);
+    }
+    
+    // Phương thức tạo mới User
+    @PostMapping("/")
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody User user) {
+        Map<String, Object> response = new HashMap<>();
+        
+        // Kiểm tra nếu email đã tồn tại
+        if (userService.existsByEmail(user.getEmail())) {
+            response.put("message", "Email already exists");
+            return ResponseEntity.status(400).body(response);
+        }
+        
+        userService.save(user); // Lưu người dùng mới
+        response.put("message", "User created successfully");
+        return ResponseEntity.status(201).body(response);
+    }
+
+    // Phương thức lấy User theo ID
+    @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Integer id) {
         User user = userService.findById(id); // Tìm người dùng theo ID
         Map<String, Object> response = new HashMap<>();
 
         if (user != null) {
-            response.put("userId", user.getUserId()); // Thêm ID vào phản hồi
+            response.put("userId", user.getUserId());
             response.put("fullname", user.getFullname());
             response.put("email", user.getEmail());
             response.put("phone", user.getPhone());
@@ -44,7 +61,8 @@ public class UserController {
         }
     }
 
-    @PutMapping("/user/{id}")
+    // Phương thức cập nhật User
+    @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateUser(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
         User user = userService.findById(id); // Tìm người dùng
         Map<String, Object> response = new HashMap<>();
@@ -74,7 +92,37 @@ public class UserController {
         }
     }
     
-    @PutMapping("/user/{id}/image")
+    // Phương thức xóa User
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Integer id) {
+        Map<String, Object> response = new HashMap<>();
+        
+        if (userService.findById(id) != null) {
+            userService.deleteById(id); // Xóa người dùng theo userId
+            response.put("message", "User deleted successfully");
+            return ResponseEntity.ok(response);
+        } else {
+            response.put("message", "User not found");
+            return ResponseEntity.status(404).body(response);
+        }
+    }
+    
+    // Phương thức tìm kiếm User
+    @GetMapping("/search")
+    public ResponseEntity<List<User>> searchUsers(@RequestParam(required = false) String fullname) {
+        List<User> users;
+        
+        if (fullname != null && !fullname.isEmpty()) {
+            users = userService.findByFullname(fullname); // Tìm kiếm theo tên
+        } else {
+            users = userService.findAll(); // Lấy tất cả người dùng
+        }
+        
+        return ResponseEntity.ok(users);
+    }
+    
+    // Phương thức cập nhật hình ảnh User
+    @PutMapping("/{id}/image")
     public ResponseEntity<Map<String, Object>> updateUserImage(
             @PathVariable Integer id, 
             @RequestParam("file") MultipartFile file) {
@@ -87,7 +135,6 @@ public class UserController {
                 user.setPhoto(imageUrl); // Cập nhật URL hình ảnh trong user
                 userService.save(user); // Lưu thông tin người dùng
                 
-                // Thêm imageUrl vào phản hồi
                 response.put("imageUrl", imageUrl); // Đảm bảo trả về imageUrl
                 response.put("message", "Image updated successfully");
                 return ResponseEntity.ok(response);

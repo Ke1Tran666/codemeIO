@@ -59,8 +59,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteByUsername(String username) {
-        userRepo.deleteByUsername(username); // Đảm bảo phương thức này tồn tại trong repository
+    public void deleteById(Integer userId) {
+        userRepo.deleteById(userId); // Giả sử bạn sử dụng Spring Data JPA
     }
 
     @Override

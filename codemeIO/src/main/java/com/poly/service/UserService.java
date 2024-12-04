@@ -20,7 +20,7 @@ public interface UserService {
     
     User save(User user); // Lưu một người dùng mới
     
-    void deleteByUsername(String username);
+    void deleteById(Integer userId);
 
     boolean existsByUsername(String username); // Kiểm tra xem tên người dùng đã tồn tại
     
