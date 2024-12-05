@@ -59,9 +59,15 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
-        user.setUserType("student"); 
+        user.setUserType("student");
         
+        // Kiểm tra nếu email đã tồn tại
         if (userService.existsByEmail(user.getEmail())) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+
+        // Kiểm tra nếu username đã tồn tại
+        if (userService.existsByUsername(user.getUsername())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
         }
 
@@ -74,8 +80,7 @@ public class AuthController {
 
         UserRole userRole = new UserRole();
         userRole.setUser(savedUser);
-        userRole.setRole(role); 
-
+        userRole.setRole(role);
         userRole.setDateAssigned(new Date());
 
         userRoleService.save(userRole);

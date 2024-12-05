@@ -26,6 +26,24 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
     
+    // phương thức kiểm tra User tồn tại hay chưa
+    @GetMapping("/check-username")
+    public ResponseEntity<Map<String, Boolean>> checkUsername(@RequestParam String username) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = userService.existsByUsername(username); // Kiểm tra trong service
+        response.put("exists", exists);
+        return ResponseEntity.ok(response);
+    }
+    
+    // phương thức kiểm tra email tồn tại hay chưa
+    @GetMapping("/check-email")
+    public ResponseEntity<Map<String, Boolean>> checkEmail(@RequestParam String email) {
+        Map<String, Boolean> response = new HashMap<>();
+        boolean exists = userService.existsByEmail(email); // Kiểm tra trong service
+        response.put("exists", exists);
+        return ResponseEntity.ok(response);
+    }
+    
     // Phương thức tạo mới User
     @PostMapping("/")
     public ResponseEntity<Map<String, Object>> createUser(@RequestBody User user) {
@@ -34,6 +52,12 @@ public class UserController {
         // Kiểm tra nếu email đã tồn tại
         if (userService.existsByEmail(user.getEmail())) {
             response.put("message", "Email already exists");
+            return ResponseEntity.status(400).body(response);
+        }
+
+        // Kiểm tra nếu username đã tồn tại
+        if (userService.existsByUsername(user.getUsername())) {
+            response.put("message", "Username already exists");
             return ResponseEntity.status(400).body(response);
         }
         
@@ -73,10 +97,25 @@ public class UserController {
                 user.setFullname((String) updates.get("fullname"));
             }
             if (updates.containsKey("email")) {
-                user.setEmail((String) updates.get("email"));
+                String newEmail = (String) updates.get("email");
+                // Kiểm tra email mới có tồn tại hay không
+                if (!newEmail.equals(user.getEmail()) && userService.existsByEmail(newEmail)) {
+                    response.put("message", "Email already exists");
+                    return ResponseEntity.status(400).body(response);
+                }
+                user.setEmail(newEmail);
             }
             if (updates.containsKey("phone")) {
                 user.setPhone((String) updates.get("phone"));
+            }
+            if (updates.containsKey("username")) {
+                String newUsername = (String) updates.get("username");
+                // Kiểm tra username mới có tồn tại hay không
+                if (!newUsername.equals(user.getUsername()) && userService.existsByUsername(newUsername)) {
+                    response.put("message", "Username already exists");
+                    return ResponseEntity.status(400).body(response);
+                }
+                user.setUsername(newUsername);
             }
             if (updates.containsKey("password")) {
                 user.setPassword((String) updates.get("password")); // Nên mã hóa mật khẩu
