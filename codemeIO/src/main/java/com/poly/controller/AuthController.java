@@ -59,7 +59,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
-        user.setUserType("student");
+        user.setUserType("Student");
         
         // Kiểm tra nếu email đã tồn tại
         if (userService.existsByEmail(user.getEmail())) {
