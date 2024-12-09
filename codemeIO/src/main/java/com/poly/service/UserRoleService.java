@@ -9,7 +9,11 @@ public interface UserRoleService {
 
     UserRole save(UserRole userRole); // Lưu một vai trò người dùng mới
 
-    void deleteById(Long id); // Xóa vai trò người dùng theo ID
+    void deleteById(Integer id); // Xóa vai trò người dùng theo ID
 
-    UserRole findById(Long id); // Tìm vai trò người dùng theo ID
+    UserRole findById(Integer id); // Tìm vai trò người dùng theo ID
+
+    List<UserRole> findByUserId(Integer userId); // Tìm vai trò người dùng theo userId
+    
+    void delete(UserRole userRole);
 }

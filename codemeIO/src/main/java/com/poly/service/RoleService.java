@@ -9,4 +9,5 @@ public interface RoleService {
     Role update(Integer roleId, Role roleDetails);
     boolean delete(Integer roleId);
     List<Role> findAll(); // Thêm phương thức này
+    Role findById(Integer role);
 }

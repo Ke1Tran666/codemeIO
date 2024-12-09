@@ -5,6 +5,9 @@ import org.springframework.stereotype.Repository;
 
 import com.poly.bean.UserRole;
 
+import java.util.List;
+
 @Repository
-public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
+public interface UserRoleRepository extends JpaRepository<UserRole, Integer> {
+    List<UserRole> findByUser_UserId(Integer userId); // Tìm vai trò theo user.userId
 }

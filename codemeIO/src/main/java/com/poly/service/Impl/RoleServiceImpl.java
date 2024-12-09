@@ -49,4 +49,10 @@ public class RoleServiceImpl implements RoleService {
     public List<Role> findAll() {
         return roleRepository.findAll(); // Lấy tất cả vai trò
     }
+    
+    @Override
+    public Role findById(Integer roleId) {
+        Optional<Role> optionalRole = roleRepository.findById(roleId);
+        return optionalRole.orElse(null); // Trả về vai trò nếu tìm thấy, ngược lại trả về null
+    }
 }

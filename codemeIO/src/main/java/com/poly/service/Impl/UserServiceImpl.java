@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void deleteUserRole(Long id) {
+    public void deleteUserRole(Integer id) {
         userRoleRepo.deleteById(id);
     }
 
@@ -135,5 +135,10 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
             throw new RuntimeException("Không thể lưu hình ảnh");
         }
+    }
+    
+    @Override
+    public boolean existsById(Integer userId) {
+        return userRepo.existsById(userId); // Nếu bạn sử dụng Spring Data JPA
     }
 }

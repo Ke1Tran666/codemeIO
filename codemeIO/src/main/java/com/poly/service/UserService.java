@@ -25,6 +25,8 @@ public interface UserService {
     boolean existsByUsername(String username); // Kiểm tra xem tên người dùng đã tồn tại
     
     boolean existsByEmail(String email);
+    
+    boolean existsById(Integer userId);
 
     List<User> findByFullname(String fullname);
 
@@ -36,7 +38,7 @@ public interface UserService {
 
     UserRole saveUserRole(UserRole userRole);
 
-    void deleteUserRole(Long id);
+    void deleteUserRole(Integer id);
 
     Long countUsersByType(String userType);
     
