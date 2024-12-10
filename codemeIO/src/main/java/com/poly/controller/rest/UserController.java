@@ -1,5 +1,6 @@
 package com.poly.controller.rest;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,18 +47,57 @@ public class UserController {
 
     // Tạo mới User
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createUser(@RequestBody User user) {
+    public ResponseEntity<Map<String, Object>> createUser(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("fullname") String fullname,
+            @RequestParam("email") String email,
+            @RequestParam("username") String username,
+            @RequestParam("password") String password,
+            @RequestParam("gender") String gender,
+            @RequestParam(value = "specialization", required = false) String specialization,
+            @RequestParam(value = "yearsOfExperience", required = false) Integer yearsOfExperience,
+            @RequestParam("status") String status) {
+
         Map<String, Object> response = new HashMap<>();
 
-        if (userService.existsByEmail(user.getEmail())) {
-            response.put("message", "Email already exists");
-            return ResponseEntity.status(400).body(response);
+        // Kiểm tra tệp hình ảnh
+        if (file == null || file.isEmpty()) {
+            response.put("message", "User photo is required");
+            return ResponseEntity.badRequest().body(response);
         }
 
-        if (userService.existsByUsername(user.getUsername())) {
-            response.put("message", "Username already exists");
-            return ResponseEntity.status(400).body(response);
+        // Kiểm tra dữ liệu bắt buộc
+        if (username == null || fullname == null || password == null || email == null) {
+            response.put("message", "Email, username, fullname, and password are required");
+            return ResponseEntity.badRequest().body(response);
         }
+
+        // Kiểm tra xem email và username có tồn tại không
+        if (userService.existsByEmail(email)) {
+            response.put("message", "Email already exists");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        if (userService.existsByUsername(username)) {
+            response.put("message", "Username already exists");
+            return ResponseEntity.badRequest().body(response);
+        }
+
+        // Tạo mới User
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setFullname(fullname);
+        user.setPassword(password); // Nên mã hóa mật khẩu
+        user.setGender(gender);
+        user.setStatus(status);
+        user.setSpecialization(specialization);
+        user.setYearsOfExperience(yearsOfExperience);
+        user.setStartDate(new Date()); // Thiết lập ngày tạo tài khoản
+
+        // Lưu hình ảnh
+        String imageUrl = userService.saveImage(file);
+        user.setPhoto(imageUrl);
 
         userService.save(user);
         response.put("user", user);
@@ -70,9 +110,7 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Integer id) {
         User user = userService.findById(id);
         if (user == null) {
-            Map<String, Object> response = new HashMap<>();
-            response.put("message", "User not found");
-            return ResponseEntity.status(404).body(response);
+            return ResponseEntity.status(404).body(Map.of("message", "User not found"));
         }
 
         return ResponseEntity.ok(Map.of(
@@ -81,15 +119,14 @@ public class UserController {
             "email", user.getEmail(),
             "phone", user.getPhone(),
             "photo", user.getPhoto(),
-            "specialization", user.getSpecialization(), // Thêm trường specialization
-            "yearsOfExperience", user.getYearsOfExperience(), // Thêm trường yearsOfExperience
-            "department", user.getDepartment(), // Thêm trường department
-            "status", user.getStatus() // Thêm trường status
+            "specialization", user.getSpecialization(),
+            "yearsOfExperience", user.getYearsOfExperience(),
+            "department", user.getDepartment(),
+            "status", user.getStatus()
         ));
     }
 
     // Cập nhật User
- // Cập nhật User
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> updateUser(@PathVariable Integer id, @RequestBody Map<String, Object> updates) {
         User user = userService.findById(id);
@@ -115,26 +152,16 @@ public class UserController {
             user.setUsername(newUsername);
         }
         if (updates.containsKey("password")) {
-            user.setPassword((String) updates.get("password")); // Sử dụng service để mã hóa
+            user.setPassword((String) updates.get("password")); // Nên mã hóa mật khẩu
         }
-
-        // Cập nhật các trường mới
+        if (updates.containsKey("gender")) {
+            user.setGender((String) updates.get("gender"));
+        }
         if (updates.containsKey("specialization")) {
             user.setSpecialization((String) updates.get("specialization"));
         }
         if (updates.containsKey("yearsOfExperience")) {
-            Object yearsOfExperience = updates.get("yearsOfExperience");
-            if (yearsOfExperience instanceof Integer) {
-                user.setYearsOfExperience((Integer) yearsOfExperience);
-            } else if (yearsOfExperience instanceof String) {
-                try {
-                    user.setYearsOfExperience(Integer.parseInt((String) yearsOfExperience));
-                } catch (NumberFormatException e) {
-                    return ResponseEntity.status(400).body(Map.of("message", "Invalid format for years of experience"));
-                }
-            } else {
-                return ResponseEntity.status(400).body(Map.of("message", "Invalid type for years of experience"));
-            }
+            user.setYearsOfExperience((Integer) updates.get("yearsOfExperience"));
         }
         if (updates.containsKey("department")) {
             user.setDepartment((String) updates.get("department"));
@@ -171,13 +198,14 @@ public class UserController {
     public ResponseEntity<Map<String, Object>> updateUserImage(
             @PathVariable Integer id,
             @RequestParam("file") MultipartFile file) {
+        
         User user = userService.findById(id);
         if (user == null) {
             return ResponseEntity.status(404).body(Map.of("message", "User not found"));
         }
 
-        if (!file.getContentType().startsWith("image/")) {
-            return ResponseEntity.status(400).body(Map.of("message", "Invalid file type. Please upload an image."));
+        if (file == null || !file.getContentType().startsWith("image/")) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid file type. Please upload an image."));
         }
 
         try {
