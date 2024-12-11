@@ -45,63 +45,37 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    // Tạo mới User
+ // Tạo mới User
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createUser(
-            @RequestParam("file") MultipartFile file,
-            @RequestParam("fullname") String fullname,
-            @RequestParam("email") String email,
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
-            @RequestParam("gender") String gender,
-            @RequestParam(value = "specialization", required = false) String specialization,
-            @RequestParam(value = "yearsOfExperience", required = false) Integer yearsOfExperience,
-            @RequestParam("status") String status) {
-
+    public ResponseEntity<Map<String, Object>> createUser(@RequestBody User user) {
         Map<String, Object> response = new HashMap<>();
 
-        // Kiểm tra tệp hình ảnh
-        if (file == null || file.isEmpty()) {
-            response.put("message", "User photo is required");
-            return ResponseEntity.badRequest().body(response);
-        }
-
         // Kiểm tra dữ liệu bắt buộc
-        if (username == null || fullname == null || password == null || email == null) {
+        if (user.getUsername() == null || user.getFullname() == null || user.getPassword() == null || user.getEmail() == null) {
             response.put("message", "Email, username, fullname, and password are required");
             return ResponseEntity.badRequest().body(response);
         }
 
         // Kiểm tra xem email và username có tồn tại không
-        if (userService.existsByEmail(email)) {
+        if (userService.existsByEmail(user.getEmail())) {
             response.put("message", "Email already exists");
             return ResponseEntity.badRequest().body(response);
         }
-
-        if (userService.existsByUsername(username)) {
+        
+        if (userService.existsByUsername(user.getUsername())) {
             response.put("message", "Username already exists");
             return ResponseEntity.badRequest().body(response);
         }
 
-        // Tạo mới User
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setFullname(fullname);
-        user.setPassword(password); // Nên mã hóa mật khẩu
-        user.setGender(gender);
-        user.setStatus(status);
-        user.setSpecialization(specialization);
-        user.setYearsOfExperience(yearsOfExperience);
-        user.setStartDate(new Date()); // Thiết lập ngày tạo tài khoản
-
-        // Lưu hình ảnh
-        String imageUrl = userService.saveImage(file);
-        user.setPhoto(imageUrl);
-
+        // Thiết lập các thuộc tính cho User
+        user.setStartDate(new Date());
+        
+        // Lưu người dùng vào cơ sở dữ liệu
         userService.save(user);
-        response.put("user", user);
+        
+        response.put("userId", user.getUserId());  // Trả về ID của người dùng mới tạo
         response.put("message", "User created successfully");
+        
         return ResponseEntity.status(201).body(response);
     }
 
