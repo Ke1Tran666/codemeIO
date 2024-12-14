@@ -27,6 +27,17 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    // Tìm User theo ID
+    @GetMapping("/{id}")
+    public ResponseEntity<User> findUserById(@PathVariable Integer id) {
+        User user = userService.findById(id);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     // Kiểm tra User tồn tại theo username
     @GetMapping("/check-username")
     public ResponseEntity<Map<String, Boolean>> checkUsername(@RequestParam String username) {
@@ -77,27 +88,6 @@ public class UserController {
         response.put("message", "User created successfully");
         
         return ResponseEntity.status(201).body(response);
-    }
-
-    // Lấy User theo ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> getUserById(@PathVariable Integer id) {
-        User user = userService.findById(id);
-        if (user == null) {
-            return ResponseEntity.status(404).body(Map.of("message", "User not found"));
-        }
-
-        return ResponseEntity.ok(Map.of(
-            "userId", user.getUserId(),
-            "fullname", user.getFullname(),
-            "email", user.getEmail(),
-            "phone", user.getPhone(),
-            "photo", user.getPhoto(),
-            "specialization", user.getSpecialization(),
-            "yearsOfExperience", user.getYearsOfExperience(),
-            "department", user.getDepartment(),
-            "status", user.getStatus()
-        ));
     }
 
     // Cập nhật User
@@ -195,3 +185,4 @@ public class UserController {
         }
     }
 }
+
