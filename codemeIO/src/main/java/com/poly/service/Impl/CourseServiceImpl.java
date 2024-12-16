@@ -1,9 +1,16 @@
 package com.poly.service.Impl;
 
 import java.util.List;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.poly.bean.Category;
 import com.poly.bean.Course;
 import com.poly.repository.CourseRepository;
@@ -68,5 +75,23 @@ public class CourseServiceImpl implements CourseService {
     @Override
     public List<Course> findByCategoryId(Integer categoryId) {
         return courseRepo.findByCategory_CategoryId(categoryId); // Sử dụng phương thức từ repository
+    }
+    
+    @Override
+    public String saveUploadedFile(MultipartFile file) {
+        String uploadDir = "uploads/";
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+        try {
+            // Tạo thư mục nếu chưa tồn tại
+            Files.createDirectories(Paths.get(uploadDir));
+            // Lưu file
+            Path filePath = Paths.get(uploadDir + fileName);
+            Files.copy(file.getInputStream(), filePath);
+            return fileName;
+        } catch (IOException e) {
+            e.printStackTrace(); // Log lỗi
+            return null; // Hoặc ném ra ngoại lệ nếu cần
+        }
     }
 }

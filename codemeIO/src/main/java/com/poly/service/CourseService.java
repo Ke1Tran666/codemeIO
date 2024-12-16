@@ -1,6 +1,9 @@
 package com.poly.service;
 
 import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import java.math.BigDecimal;
 import com.poly.bean.Category;
 import com.poly.bean.Course;
@@ -28,4 +31,6 @@ public interface CourseService {
     Integer countCoursesByCategory(Integer categoryId);
     
     List<Course> findByCategoryId(Integer categoryId);
+    
+    String saveUploadedFile(MultipartFile file);
 }

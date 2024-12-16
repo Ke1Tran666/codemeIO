@@ -5,8 +5,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.poly.bean.Course;
 import com.poly.service.CourseService;
-
+import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -42,10 +43,21 @@ public class CourseController {
         if (existingCourse == null) {
             return ResponseEntity.notFound().build();
         }
-        existingCourse.setTitle(courseDetails.getTitle());
-        existingCourse.setDescription(courseDetails.getDescription());
-        existingCourse.setPrice(courseDetails.getPrice());
+
+        // Kiểm tra và cập nhật từng thuộc tính, chỉ cập nhật nếu giá trị không phải là null
+        if (courseDetails.getTitle() != null) {
+            existingCourse.setTitle(courseDetails.getTitle());
+        }
+        if (courseDetails.getDescription() != null) {
+            existingCourse.setDescription(courseDetails.getDescription());
+        }
+        if (courseDetails.getPrice() != null) {
+            existingCourse.setPrice(courseDetails.getPrice());
+        } else {
+            return ResponseEntity.badRequest().body(null); // Trả về lỗi nếu giá trị Price là null
+        }
         // Cập nhật các thuộc tính khác nếu cần
+
         Course updatedCourse = courseService.save(existingCourse);
         return ResponseEntity.ok(updatedCourse);
     }
@@ -62,5 +74,32 @@ public class CourseController {
     @GetMapping("/courses/search")
     public List<Course> searchCourses(@RequestParam String title) {
         return courseService.findByTitle(title); // Tìm kiếm theo tiêu đề
+    }
+
+    @PostMapping("/courses/{id}/upload-image")
+    public ResponseEntity<Map<String, Object>> uploadImage(
+            @PathVariable Integer id, 
+            @RequestParam("file") MultipartFile file) {
+        
+        Course course = courseService.findById(id);
+        if (course == null) {
+            return ResponseEntity.status(404).body(Map.of("message", "Course not found"));
+        }
+
+        if (file == null || !file.getContentType().startsWith("image/")) {
+            return ResponseEntity.badRequest().body(Map.of("message", "Invalid file type. Please upload an image."));
+        }
+
+        try {
+            String fileName = courseService.saveUploadedFile(file);
+            course.setImageCourses("/uploads/" + fileName);
+            courseService.save(course);
+            return ResponseEntity.ok(Map.of(
+                "message", "Image updated successfully",
+                "imageUrl", course.getImageCourses()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("message", "Failed to upload image"));
+        }
     }
 }
