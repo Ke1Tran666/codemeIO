@@ -15,6 +15,11 @@ public class LessonController {
 
     @Autowired
     private LessonService lessonService;
+    
+    @GetMapping
+    public List<Lesson> getAllLesson() {
+        return lessonService.findAll(); // Trả về danh sách khóa học
+    }
 
     @GetMapping("/course/{courseId}")
     public List<Lesson> getLessonsByCourse(@PathVariable Integer courseId) {

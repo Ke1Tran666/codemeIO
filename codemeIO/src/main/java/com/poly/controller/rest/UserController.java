@@ -156,6 +156,16 @@ public class UserController {
             : userService.findAll();
         return ResponseEntity.ok(users);
     }
+    
+    // Tìm người dùng bằng trạng thái
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<User>> findUsersByStatus(@PathVariable String status) {
+        List<User> users = userService.findByStatus(status);
+        if (users.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(users);
+    }
 
     // Cập nhật hình ảnh User
     @PutMapping("/{id}/image")

@@ -39,6 +39,11 @@ public class UserServiceImpl implements UserService {
     public User findById(Integer userId) { // Thêm phương thức này
         return userRepo.findById(userId).orElse(null); // Trả về null nếu không tìm thấy
     }
+    
+    @Override
+    public List<User> findByStatus(String status) {
+        return userRepo.findByStatus(status); // Gọi phương thức từ UserRepository
+    }
 
     @Override
     public User findByUsername(String username) {

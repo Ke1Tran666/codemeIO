@@ -46,4 +46,6 @@ public interface UserService {
     
     String saveImage(MultipartFile file);
     
+    List<User> findByStatus(String status);
+    
 }
