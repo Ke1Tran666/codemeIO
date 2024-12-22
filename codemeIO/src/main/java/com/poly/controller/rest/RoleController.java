@@ -21,6 +21,7 @@ public class RoleController {
         return ResponseEntity.ok(roles);
     }
 
+    // lấy Vai trò theo Tên
     @GetMapping("/{roleName}")
     public ResponseEntity<Role> getRoleByName(@PathVariable String roleName) {
         Role role = roleService.findByName(roleName);
