@@ -23,7 +23,7 @@ public class Course implements Serializable {
     private String title;
 
     @Column(columnDefinition = "NVARCHAR(MAX)")
-    private String description; // Sử dụng NVARCHAR(MAX) cho mô tả
+    private String content; // Sử dụng NVARCHAR(MAX) cho mô tả
 
     @Column(name = "ImageCourses") // Đảm bảo tên cột đúng
     private String imageCourses; // Đường dẫn đến hình ảnh khóa học

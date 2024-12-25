@@ -25,7 +25,7 @@ public class Lesson implements Serializable {
    private String title;
 
    @Column(columnDefinition = "TEXT")
-   private String content; // Sử dụng columnDefinition cho NVARCHAR(MAX)
+   private String description; // Sử dụng columnDefinition cho NVARCHAR(MAX)
 
    private String linkVideo; // Đường dẫn đến video bài học.
 }

@@ -48,8 +48,8 @@ public class CourseController {
         if (courseDetails.getTitle() != null) {
             existingCourse.setTitle(courseDetails.getTitle());
         }
-        if (courseDetails.getDescription() != null) {
-            existingCourse.setDescription(courseDetails.getDescription());
+        if (courseDetails.getContent() != null) {
+            existingCourse.setContent(courseDetails.getContent());
         }
         if (courseDetails.getPrice() != null) {
             existingCourse.setPrice(courseDetails.getPrice());
