@@ -9,13 +9,13 @@ public interface LessonService {
 
     List<Lesson> findAll();
     
-    Lesson findById(Long id);
+    Lesson findById(Integer id);
     
     Lesson save(Lesson lesson);
     
-    void deleteById(Long id);
+    void deleteById(Integer id);
 
-    boolean existsById(Long id);
+    boolean existsById(Integer id);
 
     List<Lesson> findByTitleLike(String title);
 

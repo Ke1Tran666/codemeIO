@@ -9,7 +9,7 @@ import com.poly.bean.Course;
 import com.poly.bean.Lesson;
 
 @Repository
-public interface LessonRepository extends JpaRepository<Lesson, Long> {
+public interface LessonRepository extends JpaRepository<Lesson, Integer> {
 
     List<Lesson> findByTitleContaining(String title); // Tìm kiếm theo tiêu đề
 

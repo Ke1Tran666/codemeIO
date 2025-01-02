@@ -22,7 +22,7 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public Lesson findById(Long id) {
+    public Lesson findById(Integer id) {
         return lessonRepo.findById(id).orElse(null);
     }
 
@@ -32,12 +32,12 @@ public class LessonServiceImpl implements LessonService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) {
         lessonRepo.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existsById(Integer id) {
         return lessonRepo.existsById(id);
     }
 
