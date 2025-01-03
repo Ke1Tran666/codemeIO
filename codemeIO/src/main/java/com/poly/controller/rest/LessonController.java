@@ -1,6 +1,7 @@
 package com.poly.controller.rest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.poly.bean.Course;
@@ -27,18 +28,9 @@ public class LessonController {
     }
 
     @PostMapping
-    public Lesson createLesson(@RequestBody Lesson lesson) {
-        // Kiểm tra xem courseId có hợp lệ không
-        if (lesson.getCourse() == null || lesson.getCourse().getCourseId() == null) {
-            throw new RuntimeException("Course ID is required");
-        }
-
-        // Tìm khóa học từ courseId
-        Course course = new Course();
-        course.setCourseId(lesson.getCourse().getCourseId()); // Thiết lập courseId từ lesson
-        lesson.setCourse(course); // Liên kết bài học với khóa học
-
-        return lessonService.save(lesson); // Tạo bài học mới
+    public ResponseEntity<Lesson> createLesson(@RequestBody Lesson lesson) {
+    	Lesson savedLesson = lessonService.save(lesson);
+        return ResponseEntity.status(201).body(savedLesson);
     }
 
     @PutMapping("/{id}")
