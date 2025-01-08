@@ -13,12 +13,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.web.bind.annotation.*;
 
 import com.poly.service.RoleService;
 import com.poly.service.UserRoleService;
 import com.poly.service.UserService;
 
+import jakarta.mail.internet.MimeMessage;
 import jakarta.servlet.http.HttpServletRequest; 
 import com.poly.bean.Role;
 import com.poly.bean.User;
@@ -102,17 +104,21 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Email không tồn tại");
         }
 
-        // Tạo token mới
-        String token = UUID.randomUUID().toString();
-        tokenStore.put(token, email); // Lưu token vào tokenStore
+        // Tạo mã OTP 6 chữ số
+        String otp = String.format("%06d", (int)(Math.random() * 999999));
 
-        // Gửi email với token
+        // Lưu mã OTP vào tokenStore
+        tokenStore.put(otp, email);
+
+        // Gửi email với mã OTP
         try {
-            SimpleMailMessage message = new SimpleMailMessage();
-            message.setTo(email);
-            message.setSubject("Yêu cầu đặt lại mật khẩu");
-            message.setText("Token của bạn là: " + token + "\nVui lòng nhấp vào liên kết sau để đặt lại mật khẩu: " +
-                    "http://localhost:5173/reset-password?token=" + URLEncoder.encode(token, StandardCharsets.UTF_8));
+        	MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(email);
+            helper.setSubject("OTP reset password");
+            helper.setText("<p>Mã OTP của bạn là:</p>" +
+                           "<p style='font-weight:bold;'>" + otp + "</p>" +
+                           "<p>Vui lòng sử dụng mã này để đặt lại mật khẩu.</p>", true);
             mailSender.send(message);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Không thể gửi email: " + e.getMessage());
@@ -121,28 +127,34 @@ public class AuthController {
         return ResponseEntity.ok("Email đặt lại mật khẩu đã được gửi đến " + email);
     }
     
-    @PostMapping("/reset-password")
-    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> payload) {
-        String token = payload.get("token");
-        String newPassword = payload.get("newPassword");
+    @PostMapping("/verify-otp")
+    public ResponseEntity<String> verifyOTP(@RequestBody Map<String, String> payload) {
+        String otp = payload.get("otp");
 
-        // Kiểm tra token
-        String email = tokenStore.get(token);
+        // Check if the OTP exists in the tokenStore
+        String email = tokenStore.get(otp);
         if (email == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token không hợp lệ hoặc đã hết hạn");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mã OTP không hợp lệ hoặc đã hết hạn");
         }
 
-        // Cập nhật mật khẩu
+        // If OTP is valid, return success message
+        return ResponseEntity.ok("Mã OTP hợp lệ");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> payload) {
+        String email = payload.get("email");
+        String newPassword = payload.get("newPassword");
+
+        // Tìm người dùng theo email
         User user = userService.findByEmail(email);
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Người dùng không tồn tại");
         }
 
+        // Cập nhật mật khẩu
         user.setPassword(newPassword); // Bạn nên mã hóa mật khẩu trước khi lưu
         userService.save(user);
-
-        // Xóa token sau khi cập nhật mật khẩu
-        tokenStore.remove(token);
 
         return ResponseEntity.ok("Mật khẩu đã được cập nhật thành công");
     }
