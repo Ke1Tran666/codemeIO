@@ -1,8 +1,7 @@
 package com.poly.service.Impl;
 
-import java.util.List;
 import java.util.Date;
-import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +14,8 @@ import com.poly.service.PaymentService;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
-    
-    @Autowired 
+
+    @Autowired
     private PaymentRepository paymentRepo;
 
     @Override
@@ -25,7 +24,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment findById(Long id) {
+    public Payment findById(Integer id) { 
         return paymentRepo.findById(id).orElse(null);
     }
 
@@ -35,12 +34,12 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public void deleteById(Long id) {
+    public void deleteById(Integer id) { 
         paymentRepo.deleteById(id);
     }
 
     @Override
-    public boolean existsById(Long id) {
+    public boolean existsById(Integer id) { 
         return paymentRepo.existsById(id);
     }
 
@@ -60,12 +59,17 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public BigDecimal getTotalPaymentsForCourse(Long courseId) {
-        return paymentRepo.getTotalPaymentsByCourseId(courseId); // Phương thức này cần được định nghĩa trong repository
+    public Integer countPaymentsByStatus(boolean status) { 
+        return paymentRepo.countByPaymentStatus(status);
+    }
+    
+    @Override
+    public List<Payment> findByStudentId(Integer studentId) {
+        return paymentRepo.findByStudent_UserId(studentId);
     }
 
     @Override
-    public Long countPaymentsByStatus(String status) {
-        return paymentRepo.countByPaymentStatus(status); // Phương thức này cũng cần được định nghĩa trong repository
+    public boolean existsByStudentIdAndCourseId(Integer studentId, Integer courseId) {
+        return paymentRepo.existsByStudent_UserIdAndCourse_CourseId(studentId, courseId);
     }
 }

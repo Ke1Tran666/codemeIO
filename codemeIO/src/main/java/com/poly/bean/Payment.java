@@ -1,7 +1,6 @@
 package com.poly.bean; 
 
 import java.io.Serializable; 
-import java.math.BigDecimal; 
 import java.util.Date; 
 
 import jakarta.persistence.*; 
@@ -15,25 +14,26 @@ import lombok.NoArgsConstructor;
 @Entity 
 @Table(name="Payments") 
 public class Payment implements Serializable { 
-     @Id 
-     @GeneratedValue(strategy=GenerationType.IDENTITY) 
-     private Integer paymentId; 
+    @Id 
+    @GeneratedValue(strategy=GenerationType.IDENTITY) 
+    private Integer paymentId; 
 
-     @ManyToOne 
-     @JoinColumn(name="StudentId") 
-     private User student; // Liên kết đến User (học viên) 
+    @ManyToOne 
+    @JoinColumn(name="StudentId") 
+    private User student; // Liên kết đến User (học viên) 
 
-     @ManyToOne 
-     @JoinColumn(name="CourseId") 
-     private Course course; // Liên kết đến Course 
+    @ManyToOne 
+    @JoinColumn(name="CourseId") 
+    private Course course; // Liên kết đến Course 
 
-     @Column(nullable=false) 
-     private BigDecimal amount; 
+    @Temporal(TemporalType.DATE) 
+    @Column(nullable=false) 
+    private Date paymentDate; 
 
-     @Temporal(TemporalType.DATE) 
-     @Column(nullable=false) 
-     private Date paymentDate; 
+    @Column(nullable=false) 
+    private boolean paymentStatus; // Trạng thái thanh toán (true: thành công, false: thất bại)
 
-     @Column(nullable=false) 
-     private String paymentStatus; // Trạng thái thanh toán (thành công, thất bại, v.v.)
+    @Temporal(TemporalType.DATE) 
+    @Column(nullable=false) 
+    private Date addedDate; // Ngày thêm mới
 }

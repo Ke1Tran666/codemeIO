@@ -7,19 +7,17 @@ import com.poly.bean.Course;
 import com.poly.bean.Payment;
 import com.poly.bean.User;
 
-import java.math.BigDecimal;
-
 public interface PaymentService {
 
     List<Payment> findAll();
 
-    Payment findById(Long id);
+    Payment findById(Integer id); 
 
     Payment save(Payment payment);
 
-    void deleteById(Long id);
+    void deleteById(Integer id); 
 
-    boolean existsById(Long id);
+    boolean existsById(Integer id); 
 
     List<Payment> findByStudent(User student);
 
@@ -27,7 +25,10 @@ public interface PaymentService {
 
     List<Payment> findByPaymentDateBetween(Date startDate, Date endDate);
 
-    BigDecimal getTotalPaymentsForCourse(Long courseId);
+    Integer countPaymentsByStatus(boolean status); 
+    
+    List<Payment> findByStudentId(Integer studentId);
 
-    Long countPaymentsByStatus(String status);
+    // Thêm phương thức kiểm tra tồn tại Payment theo studentId và courseId
+    boolean existsByStudentIdAndCourseId(Integer studentId, Integer courseId);
 }
